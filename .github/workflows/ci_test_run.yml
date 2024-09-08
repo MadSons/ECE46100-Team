@@ -2,6 +2,8 @@ name: Testing run script options
 
 on:
   pull_request:
+  workflow_dispatch:
+  
 
 jobs:
   build:
