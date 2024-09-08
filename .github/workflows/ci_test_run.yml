@@ -15,7 +15,7 @@ jobs:
       
     - name: install_case
       run: | 
-        cd Phase 1/src/
+        cd "Phase 1"/src/
         ./run install
         
     - name: test_case
