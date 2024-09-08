@@ -1,0 +1,20 @@
+name: NodeJS with Grunt
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x, 22.x]
+
+    steps:
+    - name: install_case
+      run: ./run install
+    - name: test_case
+      run: ./run test
+    - name: url_case
+      run: ./run Phase\ 1/reference/SampleUrlFile.txt 
