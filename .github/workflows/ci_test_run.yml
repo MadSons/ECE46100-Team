@@ -15,7 +15,7 @@ jobs:
       
     - name: install_case
       run: |
-        cd ECE46100-Team
+        ls
         ./run install
         
     - name: test_case
