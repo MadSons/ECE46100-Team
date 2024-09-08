@@ -1,7 +1,7 @@
 name: NodeJS with Grunt
 
 on:
-  workflow_dispatch:
+  pull_request:
 
 jobs:
   build:
