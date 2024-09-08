@@ -10,9 +10,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: checkout code
+      uses: actions/checkout@v3
+      
     - name: install_case
-      run: ./run install
+      run: |
+        cd ECE46100-Team
+        ./run install
+        
     - name: test_case
-      run: ./run test
+      run: | 
+        cd ECE46100-Team
+        ./run test
+        
     - name: url_case
-      run: ./run Phase\ 1/reference/SampleUrlFile.txt 
+      run: |
+        cd ECE46100-Team
+        ./run Phase\ 1/reference/SampleUrlFile.txt 
