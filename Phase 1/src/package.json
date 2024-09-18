@@ -10,11 +10,9 @@
     },
     "author": "Calvin Madsen, Nathan Bitner, Tonmoy Rakshit, Zinat Adeleye, Osan Omayuku",
     "license": "LGPL-2.1",
-    "devDependencies": {
-        "@types/node": "^22.5.4",
-        "typescript": "^5.5.4"
-    },
     "dependencies": {
+      "@types/node": "^22.5.4",
+        "typescript": "^5.5.4",
         "axios": "^1.7.7"
     }
 }

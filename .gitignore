@@ -1,4 +1,4 @@
-# Files to be ingored by git
+# Files to be ignored by git
 
 *.env
 *.log

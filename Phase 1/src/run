@@ -65,8 +65,14 @@ else
     # Build and run the project
     log 1 "Building the project"
     ./node_modules/.bin/tsc
+    if [ $? -eq 1 ]; then
+        exit 1
+    fi
     log 1 "Running the project"
     node build/index.js "$@"
+    if [ $? -eq 1 ]; then
+        exit 1
+    fi
 fi
 
 log 2 "Script execution completed"

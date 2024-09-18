@@ -1,14 +1,21 @@
-name: Testing run script options
+name: CI Pipeline
 
 on: [push, pull_request]
   
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+        GITHUB_TOKEN: ${{secrets.TOKEN}}
 
     steps:
     - name: checkout code
       uses: actions/checkout@v3
+
+    - name: Set Environment Variables
+      run: |
+        echo "LOG_FILE=logs/app.log" >> $GITHUB_ENV
+        echo "LOG_LEVEL=2" >> $GITHUB_ENV
       
     - name: Install Case
       run: |
