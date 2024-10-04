@@ -24,6 +24,8 @@ The tool can process multiple URLs, resolve npm packages to their corresponding 
 
 ## Configuration
 
+The program can be run through the "run" script in the root directory, key arguments below
+
 ### Prerequisites
 
 - Node.js 
