@@ -6,7 +6,7 @@
     "scripts": {
         "build": "tsc",
         "start": "node build/index.js",
-        "test": "jest 2>&1 | tee temp.log"
+        "test": "jest 2>&1 | tee logs/temp.log"
     },
     "author": "Calvin Madsen, Nathan Bitner, Tonmoy Rakshit, Zinat Adeleye, Osan Omayuku",
     "license": "LGPL-2.1",
