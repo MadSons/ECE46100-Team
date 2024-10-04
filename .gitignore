@@ -6,7 +6,6 @@ logs/
 build/
 dist/
 node_modules/
-Phase\ 1/package*
 package-lock.json
 repo-licenses/
 repo-readmes/

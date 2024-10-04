@@ -16,15 +16,12 @@ jobs:
 
       - name: Install Case
         run: |
-          cd Phase\ 1/src
           ./run install
 
       - name: Test Case
         run: |
-          cd Phase\ 1/src
           ./run test
 
       - name: URL Case
         run: |
-          cd Phase\ 1/src
-          ./run ../reference/SampleUrlFile.txt
+          ./run reference/SampleUrlFile.txt
