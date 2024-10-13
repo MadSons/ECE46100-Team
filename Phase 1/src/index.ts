@@ -139,6 +139,157 @@ abstract class Metric {
 }
 
 /**
+ * FractionalDependency class for calculating the fractional dependency metric
+ */
+class FractionalDependency extends Metric {
+  constructor(url: string) {
+    super(url, 1);
+  }
+
+  static getWeight(): number {
+    return 1;
+  }
+
+  async getVersionRatio(): Promise<number>{
+    var versionResponse;
+
+    try
+    {
+      versionResponse = await axios.get(`https://raw.githubusercontent.com/${this.owner}/${this.repo}/master/package.json`);
+    }
+    catch (error)
+    {
+      try
+      {
+        versionResponse = await axios.get(`https://raw.githubusercontent.com/${this.owner}/${this.repo}/main/package.json`);
+      }
+      catch (error)
+      {
+        return 1;
+      }
+    }
+    
+    const totalDepObj = versionResponse.data.dependencies;
+
+    let total = 0;
+    let correct = 0;
+
+    for (const key in totalDepObj)
+    {
+      if(totalDepObj[key][0] == "~")
+      {
+        correct++;
+      }
+
+      total++;
+    }
+
+    console.log(correct);
+    console.log(total);
+
+    if (total > 0)
+    {
+      return correct / total;
+    }
+    else
+    {
+      return 1;
+    }
+  }
+
+  async calculate(): Promise<MetricResult> {
+    const startTime = Date.now();
+
+    this.extractOwnerAndRepo();
+
+    let score: number = 0;
+
+    try {
+      score = await this.getVersionRatio();
+    } catch (error) {
+      await log(`Error checking discussions for ${this.url}: ${error}`, 2);
+    }
+
+    const latency = (Date.now() - startTime) / 1000; // Convert to seconds
+
+    return {score, latency};
+  }
+}
+
+/**
+ * PullRequest class for calculating the pull request metric
+ */
+class PullRequest extends Metric {
+  constructor(url: string) {
+    super(url, 1);
+  }
+
+  static getWeight(): number {
+    return 1;
+  }
+
+  async getNumCommits(): Promise<number>{
+    const commitResponse = await axios.get(`https://api.github.com/repos/${this.owner}/${this.repo}/commits`, {
+      headers: {
+        'Authorization': `token ${process.env.GITHUB_TOKEN}`,
+        'Accept': 'application/vnd.github.v3+json'
+      }
+    });
+
+    let commitSet: Set<string> = new Set<string>();
+    const numPullCommits = (commitResponse.data).length;
+
+    for (let j = 0; j < numPullCommits; j++)
+    {
+      const commitId: string = commitResponse.data[j].sha
+
+      if (!commitSet.has(commitId))
+      {
+        commitSet.add(commitId);
+      }
+    }
+
+    const commitVal: string[] = [...commitSet];
+    let commitPullSum = 0;
+
+    for (let i = 0; i < commitVal.length; i++)
+    {
+      const commitPullResponse = await axios.get(`https://api.github.com/repos/${this.owner}/${this.repo}/commits/${commitVal[i]}/pulls?state=closed`, {
+        headers: {
+          'Authorization': `token ${process.env.GITHUB_TOKEN}`,
+          'Accept': 'application/vnd.github.v3+json'
+        }
+      });
+
+      if ((commitPullResponse.data).length > 0)
+      {
+        commitPullSum++;
+      }
+    }
+
+    return commitPullSum / commitSet.size;
+  }
+
+  async calculate(): Promise<MetricResult> {
+    const startTime = Date.now();
+
+    this.extractOwnerAndRepo();
+
+    let score: number = 0;
+
+    try {
+      score = await this.getNumCommits();
+    } catch (error) {
+      await log(`Error checking discussions for ${this.url}: ${error}`, 2);
+    }
+
+    const latency = (Date.now() - startTime) / 1000; // Convert to seconds
+
+    return {score, latency};
+  }
+}
+
+/**
  * RampUp class for calculating the ramp-up time metric
  */
 class RampUp extends Metric {
@@ -785,7 +936,7 @@ class URLHandler {
 
   constructor(url: string) {
     this.url = url;
-    this.metricClasses = [RampUp, Correctness, BusFactor, ResponsiveMaintainer, License];
+    this.metricClasses = [RampUp, Correctness, BusFactor, ResponsiveMaintainer, License, PullRequest, FractionalDependency];
   }
 
   /**
@@ -887,7 +1038,9 @@ if (!isMainThread) {
     Correctness,
     BusFactor,
     ResponsiveMaintainer,
-    License
+    License,
+    PullRequest,
+    FractionalDependency
   };
 
   const runMetric = async () => {
@@ -993,7 +1146,7 @@ async function runTests(): Promise<void> {
 
 
 // Export the necessary functions and classes
-export {URLHandler, Metric, RampUp, Correctness, BusFactor, ResponsiveMaintainer, License, 
+export {URLHandler, Metric, RampUp, Correctness, BusFactor, ResponsiveMaintainer, License, PullRequest, FractionalDependency,
         isValidUrl, processURLs, getGithubRepoFromNpm, log};
 
 /**
